@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"time"
@@ -17,6 +19,16 @@ import (
 	"mailcleanerpro/pkg/gmail"
 	"mailcleanerpro/pkg/logger"
 )
+
+func generateStateOauthCookie(c *gin.Context) string {
+	b := make([]byte, 32)
+	_, err := rand.Read(b)
+	if err != nil {
+		// fallback to timestamp if random fails (not recommended, but avoids crash)
+		return base64.URLEncoding.EncodeToString([]byte(fmt.Sprintf("%d", time.Now().UnixNano())))
+	}
+	return base64.URLEncoding.EncodeToString(b)
+}
 
 func setupRouter() (*gin.Engine, error) {
 	// Initialize logger with configuration
@@ -68,7 +80,16 @@ func setupRouter() (*gin.Engine, error) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		state := "state"
+		state := generateStateOauthCookie(c)
+		// Set state in a secure cookie
+		http.SetCookie(c.Writer, &http.Cookie{
+			Name:     "oauthstate",
+			Value:    state,
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteLaxMode,
+		})
 		url := conf.AuthCodeURL(state, oauth2.AccessTypeOffline)
 		c.Redirect(http.StatusTemporaryRedirect, url)
 	})
@@ -76,6 +97,14 @@ func setupRouter() (*gin.Engine, error) {
 	r.GET("/auth/callback", func(c *gin.Context) {
 		// Debug: Log all query parameters
 		fmt.Printf("Callback received with query params: %v\n", c.Request.URL.RawQuery)
+
+		// Validate state to prevent CSRF
+		stateFromQuery := c.Query("state")
+		cookie, err := c.Request.Cookie("oauthstate")
+		if err != nil || cookie.Value != stateFromQuery {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid OAuth state"})
+			return
+		}
 
 		// Check if this is a fetch request from the frontend
 		isFetchRequest := c.GetHeader("X-Requested-With") == "XMLHttpRequest" ||
