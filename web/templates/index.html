@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail Cleaner Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-mail-bulk text-2xl text-indigo-600 mr-2"></i>
+                    <h1 class="text-xl font-bold text-gray-900">Gmail Cleaner Pro</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#" class="text-gray-900 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                        <a href="#" class="text-gray-500 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Settings</a>
+                        <a href="#" class="text-gray-500 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Help</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            <!-- Hero Section -->
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
+                    Clean Your Gmail Inbox
+                </h2>
+                <p class="mt-4 text-xl text-gray-600">
+                    Efficiently remove emails from Social, Forums, Promotions, and Updates categories
+                </p>
+            </div>            <div class="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Categories -->
+                    <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-2">Select Categories</h3>
+                        <div class="mt-2 space-y-2">
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-indigo-600" value="CATEGORY_SOCIAL">
+                                <span class="ml-2">Social</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-indigo-600" value="CATEGORY_FORUMS">
+                                <span class="ml-2">Forums</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-indigo-600" value="CATEGORY_PROMOTIONS">
+                                <span class="ml-2">Promotions</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-indigo-600" value="CATEGORY_UPDATES">
+                                <span class="ml-2">Updates</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-red-600" value="TRASH">
+                                <span class="ml-2 text-red-600">
+                                    <i class="fas fa-trash mr-1"></i>
+                                    Trash (Permanent Delete Only)
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-2">Options</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="max-per-cat" class="block text-sm font-medium text-gray-700">Max per category</label>
+                                <input id="max-per-cat" type="number" min="1" max="1000" value="500" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                            </div>
+                            
+
+                        </div>
+
+                        <!-- User Panel -->
+                        <div id="user-panel" class="mt-4">
+                            <!-- Not Authenticated State -->
+                            <div id="not-authenticated" class="block">
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                                        <p class="text-sm text-blue-700">Connect your Gmail account to start cleaning</p>
+                                    </div>
+                                    <button id="login-btn" class="mt-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                        <i class="fab fa-google mr-2"></i>
+                                        Connect Gmail Account
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Authenticated State - User Panel -->
+                            <div id="authenticated" class="hidden">
+                                <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+                                    <!-- User Info Header -->
+                                    <div class="bg-gradient-to-r from-green-50 to-blue-50 px-4 py-3 border-b border-gray-200 rounded-t-lg">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0">
+                                                    <div class="h-8 w-8 bg-green-500 rounded-full flex items-center justify-center">
+                                                        <i class="fas fa-user text-white text-sm"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="ml-3">
+                                                    <p class="text-sm font-medium text-gray-900" id="user-email">Connected Account</p>
+                                                    <p class="text-xs text-green-600">
+                                                        <i class="fas fa-check-circle mr-1"></i>
+                                                        Gmail Connected
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <button id="settings-btn" class="p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md" title="Settings">
+                                                    <i class="fas fa-cog"></i>
+                                                </button>
+                                                <button id="logout-btn" class="p-2 text-gray-400 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 rounded-md" title="Disconnect">
+                                                    <i class="fas fa-sign-out-alt"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Panel Content -->
+                                    <div class="p-4">
+                                        <!-- Quick Actions -->
+                                        <div class="mb-4">
+                                            <h4 class="text-sm font-medium text-gray-900 mb-2">Quick Actions</h4>
+                                            <div class="flex flex-wrap gap-2">
+                                                <button id="clean-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                    <i class="fas fa-broom mr-2"></i>
+                                                    Clean Now
+                                                </button>
+                                                <button id="preview-btn" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                    <i class="fas fa-eye mr-2"></i>
+                                                    Preview
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Stats -->
+                                        <div id="user-stats" class="grid grid-cols-3 gap-4 mb-4">
+                                            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                                <div class="text-lg font-semibold text-gray-900" id="total-emails">-</div>
+                                                <div class="text-xs text-gray-500">Total Emails</div>
+                                            </div>
+                                            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                                <div class="text-lg font-semibold text-green-600" id="cleaned-emails">-</div>
+                                                <div class="text-xs text-gray-500">Cleaned</div>
+                                            </div>
+                                            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                                <div class="text-lg font-semibold text-blue-600" id="last-clean">-</div>
+                                                <div class="text-xs text-gray-500">Last Clean</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result -->
+                <div id="result" class="mt-6 hidden">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-2">Result</h3>
+                    <pre class="bg-gray-100 p-4 rounded"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Settings</h3>
+                    <button id="close-settings" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <!-- Account Information -->
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-900 mb-2">Account Information</h4>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-600">Email: <span id="settings-email" class="font-medium">-</span></p>
+                            <p class="text-sm text-gray-600">Connected: <span id="settings-connected" class="font-medium">-</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Cleaning Preferences -->
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-900 mb-2">Default Preferences</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="auto-clean" class="form-checkbox h-4 w-4 text-indigo-600">
+                                <span class="ml-2 text-sm text-gray-700">Enable auto-clean notifications</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="backup-before-clean" class="form-checkbox h-4 w-4 text-indigo-600" checked>
+                                <span class="ml-2 text-sm text-gray-700">Backup emails before cleaning</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div>
+                        <h4 class="text-sm font-medium text-red-600 mb-2">Danger Zone</h4>
+                        <button id="disconnect-account" class="w-full px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <i class="fas fa-unlink mr-2"></i>
+                            Disconnect Gmail Account
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-6 space-x-3">
+                    <button id="cancel-settings" class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancel
+                    </button>
+                    <button id="save-settings" class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-40">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="flex items-center">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600 mr-3"></div>
+                <span class="text-gray-700">Processing...</span>
+            </div>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced OAuth and User Panel Management
+        class AuthManager {
+            constructor() {
+                this.accessToken = localStorage.getItem('gmail_access_token');
+                this.userEmail = localStorage.getItem('user_email');
+                this.userStats = JSON.parse(localStorage.getItem('user_stats') || '{}');
+                this.settings = JSON.parse(localStorage.getItem('user_settings') || '{}');
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.handleOAuthCallback();
+                this.updateUI();
+                this.loadUserStats();
+            }
+
+            setupEventListeners() {
+                // Authentication buttons
+                document.getElementById('login-btn').addEventListener('click', () => this.login());
+                document.getElementById('logout-btn').addEventListener('click', () => this.logout());
+                
+                // Action buttons
+                document.getElementById('clean-btn').addEventListener('click', () => this.cleanEmails());
+                document.getElementById('preview-btn').addEventListener('click', () => this.previewClean());
+                
+                // Settings modal
+                document.getElementById('settings-btn').addEventListener('click', () => this.openSettings());
+                document.getElementById('close-settings').addEventListener('click', () => this.closeSettings());
+                document.getElementById('cancel-settings').addEventListener('click', () => this.closeSettings());
+                document.getElementById('save-settings').addEventListener('click', () => this.saveSettings());
+                document.getElementById('disconnect-account').addEventListener('click', () => this.disconnectAccount());
+                
+                // Close modal on outside click
+                document.getElementById('settings-modal').addEventListener('click', (e) => {
+                    if (e.target.id === 'settings-modal') {
+                        this.closeSettings();
+                    }
+                });
+            }
+
+            login() {
+                this.showLoading('Redirecting to Google...');
+                window.location.href = '/auth/login';
+            }
+
+            logout() {
+                if (confirm('Are you sure you want to disconnect your Gmail account?')) {
+                    this.clearUserData();
+                    this.updateUI();
+                    this.showNotification('Successfully disconnected from Gmail', 'success');
+                }
+            }
+
+            disconnectAccount() {
+                if (confirm('This will permanently disconnect your Gmail account. Are you sure?')) {
+                    this.clearUserData();
+                    this.closeSettings();
+                    this.updateUI();
+                    this.showNotification('Account disconnected successfully', 'success');
+                }
+            }
+
+            clearUserData() {
+                localStorage.removeItem('gmail_access_token');
+                localStorage.removeItem('user_email');
+                localStorage.removeItem('user_stats');
+                localStorage.removeItem('user_settings');
+                this.accessToken = null;
+                this.userEmail = null;
+                this.userStats = {};
+                this.settings = {};
+            }
+
+            handleOAuthCallback() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get('code');
+                const error = urlParams.get('error');
+
+                if (error) {
+                    this.showNotification('OAuth authentication failed: ' + error, 'error');
+                    this.redirectToHome();
+                    return;
+                }
+
+                if (code) {
+                    this.showLoading('Completing authentication...');
+                    this.exchangeCodeForToken(code);
+                }
+            }
+
+            async exchangeCodeForToken(code) {
+                try {
+                    const response = await fetch('/auth/callback?code=' + encodeURIComponent(code));
+                    const data = await response.json();
+                    
+                    if (data.access_token) {
+                        this.accessToken = data.access_token;
+                        localStorage.setItem('gmail_access_token', this.accessToken);
+                        
+                        // Extract user email from token if available
+                        if (data.user_email) {
+                            this.userEmail = data.user_email;
+                            localStorage.setItem('user_email', this.userEmail);
+                        }
+                        
+                        this.hideLoading();
+                        this.redirectToHome();
+                        this.updateUI();
+                        this.loadUserStats();
+                        this.showNotification('Successfully connected to Gmail!', 'success');
+                    } else {
+                        throw new Error(data.error || 'Failed to get access token');
+                    }
+                } catch (error) {
+                    console.error('Token exchange failed:', error);
+                    this.hideLoading();
+                    this.showNotification('Failed to connect to Gmail: ' + error.message, 'error');
+                    this.redirectToHome();
+                }
+            }
+
+            redirectToHome() {
+                // Clean up URL and redirect to home
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            updateUI() {
+                const notAuthDiv = document.getElementById('not-authenticated');
+                const authDiv = document.getElementById('authenticated');
+                
+                if (this.accessToken) {
+                    notAuthDiv.classList.add('hidden');
+                    authDiv.classList.remove('hidden');
+                    
+                    // Update user email display
+                    const userEmailEl = document.getElementById('user-email');
+                    if (userEmailEl && this.userEmail) {
+                        userEmailEl.textContent = this.userEmail;
+                    }
+                } else {
+                    notAuthDiv.classList.remove('hidden');
+                    authDiv.classList.add('hidden');
+                }
+            }
+
+            async loadUserStats() {
+                if (!this.accessToken) return;
+                
+                try {
+                    // Simulate loading stats (replace with actual API call)
+                    const stats = {
+                        totalEmails: this.userStats.totalEmails || 0,
+                        cleanedEmails: this.userStats.cleanedEmails || 0,
+                        lastCleanCount: this.userStats.lastCleanCount || 0
+                    };
+                    
+                    document.getElementById('total-emails').textContent = stats.totalEmails.toLocaleString();
+                    document.getElementById('cleaned-emails').textContent = stats.cleanedEmails.toLocaleString();
+                    document.getElementById('last-clean').textContent = stats.lastCleanCount.toLocaleString();
+                } catch (error) {
+                    console.error('Failed to load user stats:', error);
+                }
+            }
+
+            async previewClean() {
+                if (!this.accessToken) {
+                    this.showNotification('Please connect your Gmail account first', 'warning');
+                    return;
+                }
+
+                const categories = Array.from(document.querySelectorAll('input[type=checkbox]:checked'))
+                    .filter(cb => cb.value && (cb.value.startsWith('CATEGORY_') || cb.value === 'TRASH'))
+                    .map(cb => cb.value);
+                const maxPerCategory = parseInt(document.getElementById('max-per-cat').value, 10) || 500;
+                
+                if (categories.length === 0) {
+                    this.showNotification('Please select at least one category', 'warning');
+                    return;
+                }
+
+                this.showNotification('Preview functionality coming soon!', 'info');
+            }
+
+            async cleanEmails() {
+                if (!this.accessToken) {
+                    this.showNotification('Please connect your Gmail account first', 'warning');
+                    return;
+                }
+
+                const categories = Array.from(document.querySelectorAll('input[type=checkbox]:checked'))
+                    .filter(cb => cb.value && (cb.value.startsWith('CATEGORY_') || cb.value === 'TRASH'))
+                    .map(cb => cb.value);
+                const maxPerCategory = parseInt(document.getElementById('max-per-cat').value, 10) || 500;
+                
+                if (categories.length === 0) {
+                    this.showNotification('Please select at least one category', 'warning');
+                    return;
+                }
+
+                // Check if TRASH category is selected
+                const hasTrashCategory = categories.includes('TRASH');
+                
+                // Show different confirmation messages based on categories
+                let confirmMessage;
+                if (hasTrashCategory && categories.length === 1) {
+                    confirmMessage = `🗑️ WARNING: This will PERMANENTLY DELETE up to ${maxPerCategory} emails from your Trash folder. This action CANNOT be undone! Are you absolutely sure?`;
+                } else if (hasTrashCategory) {
+                    confirmMessage = `⚠️ WARNING: This will clean multiple categories including TRASH (permanent deletion). Emails from Trash will be PERMANENTLY DELETED and cannot be recovered! Continue?`;
+                } else {
+                    confirmMessage = `This will move up to ${maxPerCategory} emails per category to Trash (recoverable). Continue?`;
+                }
+                
+                if (!confirm(confirmMessage)) {
+                    return;
+                }
+
+                this.showLoading('Cleaning emails...');
+
+                try {
+                    const resp = await fetch('/api/v1/clean', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Access-Token': this.accessToken,
+                        },
+                        body: JSON.stringify({ 
+                            max_per_category: maxPerCategory, 
+                            categories
+                        }),
+                    });
+                    
+                    const data = await resp.json();
+                    
+                    if (!resp.ok) {
+                        // Handle authentication errors specifically
+                        if (resp.status === 401 && (data.action === 'reauth_required' || data.suggestion)) {
+                            this.hideLoading();
+                            const shouldReauth = confirm(
+                                `Authentication Error: ${data.error || data.message}\n\n` +
+                                `${data.suggestion || 'Your Gmail access token may have expired or lacks sufficient permissions.'}\n\n` +
+                                'Would you like to re-authenticate now?'
+                            );
+                            if (shouldReauth) {
+                                this.clearUserData();
+                                this.login();
+                            }
+                            return;
+                        }
+                        throw new Error(data.error || 'Cleaning failed');
+                    }
+                    
+                    this.hideLoading();
+                    
+                    // Update stats using new API response
+                    const cleanedNow = data.total_deleted || 0;
+                    this.userStats.cleanedEmails = (this.userStats.cleanedEmails || 0) + cleanedNow;
+                    this.userStats.lastCleanCount = cleanedNow;
+                    localStorage.setItem('user_stats', JSON.stringify(this.userStats));
+                    this.loadUserStats();
+                    
+                    // Show result
+                    const resEl = document.getElementById('result');
+                    resEl.classList.remove('hidden');
+                    resEl.querySelector('pre').textContent = JSON.stringify(data, null, 2);
+                    
+                    const statusMsg = data.completed ? 'Completed' : 'Partial (limit reached or remaining emails)';
+                    
+                    // Determine action message based on categories
+                    let actionMsg;
+                    if (hasTrashCategory && categories.length === 1) {
+                        actionMsg = 'Permanently deleted from Trash';
+                    } else if (hasTrashCategory) {
+                        actionMsg = 'Cleaned categories (Trash emails permanently deleted)';
+                    } else {
+                        actionMsg = 'Moved to trash';
+                    }
+                    
+                    this.showNotification(`${actionMsg} ${cleanedNow} emails. ${statusMsg}`, 'success');
+                } catch (error) {
+                    console.error('Cleaning failed:', error);
+                    this.hideLoading();
+                    this.showNotification('Failed to clean emails: ' + error.message, 'error');
+                }
+            }
+
+            openSettings() {
+                // Populate settings modal
+                document.getElementById('settings-email').textContent = this.userEmail || 'Not available';
+                document.getElementById('settings-connected').textContent = this.accessToken ? 'Yes' : 'No';
+                
+                // Load saved settings
+                document.getElementById('auto-clean').checked = this.settings.autoClean || false;
+                document.getElementById('backup-before-clean').checked = this.settings.backupBeforeClean !== false;
+                
+                document.getElementById('settings-modal').classList.remove('hidden');
+            }
+
+            closeSettings() {
+                document.getElementById('settings-modal').classList.add('hidden');
+            }
+
+            saveSettings() {
+                this.settings.autoClean = document.getElementById('auto-clean').checked;
+                this.settings.backupBeforeClean = document.getElementById('backup-before-clean').checked;
+                
+                localStorage.setItem('user_settings', JSON.stringify(this.settings));
+                this.closeSettings();
+                this.showNotification('Settings saved successfully!', 'success');
+            }
+
+            showLoading(message = 'Loading...') {
+                const overlay = document.getElementById('loading-overlay');
+                overlay.querySelector('span').textContent = message;
+                overlay.classList.remove('hidden');
+            }
+
+            hideLoading() {
+                document.getElementById('loading-overlay').classList.add('hidden');
+            }
+
+            showNotification(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm`;
+                
+                const colors = {
+                    success: 'bg-green-500 text-white',
+                    error: 'bg-red-500 text-white',
+                    warning: 'bg-yellow-500 text-white',
+                    info: 'bg-blue-500 text-white'
+                };
+                
+                notification.className += ` ${colors[type] || colors.info}`;
+                notification.innerHTML = `
+                    <div class="flex items-center">
+                        <span class="flex-1">${message}</span>
+                        <button class="ml-2 text-white hover:text-gray-200" onclick="this.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        // Initialize authentication manager when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new AuthManager();
+        });
+    </script>
+</body>
+</html>
