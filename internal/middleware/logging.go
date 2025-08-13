@@ -203,12 +203,20 @@ func logResponse(logger *zap.Logger, c *gin.Context, rw *responseWriter, duratio
 // logDetailedRequest logs comprehensive request information
 func logDetailedRequest(logger *zap.Logger, c *gin.Context, requestBody []byte) {
 	headers := make(map[string]string)
+	// Only log safe headers; mask all others
+	safeHeaders := map[string]bool{
+		"User-Agent":  true,
+		"Referer":     true,
+		"Accept":      true,
+		"Accept-Language": true,
+		"Accept-Encoding": true,
+		"Content-Type": true,
+	}
 	for name, values := range c.Request.Header {
-		// Mask sensitive headers
-		if isSensitiveHeader(name) {
-			headers[name] = "[MASKED]"
-		} else {
+		if safeHeaders[name] {
 			headers[name] = strings.Join(values, ", ")
+		} else {
+			headers[name] = "[MASKED]"
 		}
 	}
 
